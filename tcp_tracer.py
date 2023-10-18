@@ -195,9 +195,9 @@ if __name__ == "__main__":
 
     tracefile = sys.argv[1]
     try:
-        with open(tracefile, 'r') as f:
-            first_line = f.readline()
-            print(first_line)
+        with open(tracefile, 'rb') as f:
+            filestring = f.read()
+            print(filestring)
     except IOError:
         print("Could not read file:", tracefile)
     finally:
