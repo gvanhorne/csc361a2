@@ -196,8 +196,13 @@ if __name__ == "__main__":
     tracefile = sys.argv[1]
     try:
         with open(tracefile, 'rb') as f:
-            filestring = f.read()
-            print(filestring)
+            global_header = f.read(24)
+            ## Check thiszone...
+            packet_header1 = f.read(16)
+            ## check incl_len for len of packet, and ts_sec for the time
+            ## packet_data1 = f.read(incl_len)
+            ## continue above to split every packet
+            print(global_header)
     except IOError:
         print("Could not read file:", tracefile)
     finally:
