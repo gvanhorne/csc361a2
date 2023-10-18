@@ -193,5 +193,12 @@ if __name__ == "__main__":
         print("Usage: python3 tcp_tracer.py <tracefile>.cap")
         sys.exit(1)
 
-    url = sys.argv[1]
-    print('hello world')
+    tracefile = sys.argv[1]
+    try:
+        with open(tracefile, 'r') as f:
+            first_line = f.readline()
+            print(first_line)
+    except IOError:
+        print("Could not read file:", tracefile)
+    finally:
+        f.close()
