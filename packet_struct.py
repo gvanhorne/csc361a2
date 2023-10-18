@@ -1,4 +1,5 @@
 import struct
+import sys
 
 class IP_Header:
     src_ip = None #<type 'str'>
@@ -186,3 +187,11 @@ class packet():
     def get_RTT_value(self,p):
         rtt = p.timestamp-self.timestamp
         self.RTT_value = round(rtt,8)
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python3 SmartClient.py <URL>")
+        sys.exit(1)
+
+    url = sys.argv[1]
+    print('hello world')
