@@ -190,7 +190,7 @@ class packet():
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python3 SmartClient.py <URL>")
+        print("Usage: python3 tcp_tracer.py <tracefile>.cap")
         sys.exit(1)
 
     url = sys.argv[1]
