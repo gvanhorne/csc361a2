@@ -36,8 +36,14 @@ class Packet():
     def get_RTT_value(self,p):
         rtt = p.timestamp-self.timestamp
         self.RTT_value = round(rtt,8)
-    
+
     @classmethod
     def from_bytes(cls, packet_bytes):
         ethernet_bytes = packet_bytes[:14]
         ethernet_header = EthernetHeader.from_bytes(ethernet_bytes)
+        
+        ip_header = IPHeader()
+        ip_header.get_header_len(packet_bytes[14:15])
+        ip_header.get_total_len(packet_bytes[16:18])
+        ip_header_bytes = packet_bytes[14:14+ip_header.ip_header_len]
+        ip_header.get_IP(packet_bytes[26:30], packet_bytes[30:34])
