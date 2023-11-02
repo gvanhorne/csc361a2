@@ -13,13 +13,6 @@ class PCAPHeader:
     - snaplen (int): The maximum number of bytes to capture per packet.
     - network (int): Link-layer header type.
     """
-    magic_number = None
-    version_major = None
-    version_minor = None
-    thiszone = None
-    sigfigs = None
-    snaplen = None
-    network = None
 
     def __init__(self, magic_number, version_major, version_minor, thiszone, sigfigs, snaplen, network):
         self.magic_number = magic_number

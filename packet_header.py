@@ -40,7 +40,7 @@ class PacketHeader:
         )
 
     @classmethod
-    def from_bytes(cls, header_bytes):
+    def from_bytes(cls, header_bytes, magic_number):
         """
         Create a PacketHeader object from a byte sequence.
 
@@ -56,5 +56,7 @@ class PacketHeader:
         """
         if len(header_bytes) != 16:
             raise ValueError("Invalid packet header length")
+        byte_order = ">" if magic_number == '0xa1b2c3d4' else "<"
+        format_string = byte_order + "IIII"
         ts_sec, ts_usec, incl_len, orig_len = struct.unpack("<IIII", header_bytes)
         return cls(ts_sec, ts_usec, incl_len, orig_len)

@@ -201,7 +201,7 @@ if __name__ == "__main__":
             global_header = PCAPHeader.from_bytes(global_header_bytes)
             ## Check thiszone...
             packet_header_bytes = f.read(16)
-            packet_header = PacketHeader.from_bytes(packet_header_bytes)
+            packet_header = PacketHeader.from_bytes(packet_header_bytes, hex(global_header.magic_number))
             print(packet_header)
             # packet_header = parse_packet_header(packet_header1)
             ## check incl_len for len of packet, and ts_sec for the time
