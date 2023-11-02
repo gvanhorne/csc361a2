@@ -1,6 +1,66 @@
 import struct
 import sys
 
+
+# class PacketHeader:
+    # typedef struct pcaprec_hdr_s {
+    # guint32 ts_sec; guint32 ts_usec; guint32 incl_len;
+    # file */
+    # guint32 orig_len;
+    # } pcaprec_hdr_t;
+
+class PCAPHeader:
+    """
+    Represents a PCAP global header.
+
+    Attributes:
+    - magic_number (int): The PCAP magic number.
+    - version_major (int): Major version number of the PCAP file format.
+    - version_minor (int): Minor version number of the PCAP file format.
+    - thiszone (int): The timezone offset in seconds from UTC.
+    - sigfigs (int): Timestamp accuracy in microseconds.
+    - snaplen (int): The maximum number of bytes to capture per packet.
+    - network (int): Link-layer header type.
+    """
+    magic_number = None
+    version_major = None
+    version_minor = None
+    thiszone = None
+    sigfigs = None
+    snaplen = None
+    network = None
+
+    def __init__(self, magic_number, version_major, version_minor, thiszone, sigfigs, snaplen, network):
+        self.magic_number = magic_number
+        self.version_major = version_major
+        self.version_minor = version_minor
+        self.thiszone = thiszone
+        self.sigfigs = sigfigs
+        self.snaplen = snaplen
+        self.network = network
+
+    def __str__(self):
+        """
+        Returns a string representation of the PcapGlobalHeader object.
+        """
+        return (
+            f"Magic Number: {hex(self.magic_number)}\n"
+            f"Version Major: {self.version_major}\n"
+            f"Version Minor: {self.version_minor}\n"
+            f"Thiszone: {self.thiszone}\n"
+            f"Sigfigs: {self.sigfigs}\n"
+            f"Snaplen: {self.snaplen}\n"
+            f"Network: {self.network}"
+        )
+
+def parse_pcap_global_header(header_bytes):
+    if len(header_bytes) != 24:
+        raise ValueError("Invalid global header length")
+    magic_number = struct.unpack("<I", header_bytes[:4])[0]
+    byte_order = ">" if magic_number == '0xa1b2c3d4' else "<"
+    format_string = byte_order + "IHHIIII"
+    return PCAPHeader(*struct.unpack(format_string, header_bytes))
+
 class IP_Header:
     src_ip = None #<type 'str'>
     dst_ip = None #<type 'str'>
@@ -43,7 +103,7 @@ class IP_Header:
         length = num1+num2+num3+num4
         self.total_len_set(length)
  
-class TCP_Header:
+class TCPHeader:
     src_port = 0
     dst_port = 0
     seq_num = 0
@@ -153,11 +213,10 @@ class TCP_Header:
             self.ack_num_set(relative_ack)
    
 
-class packet():
-    
+class Packet():
     #pcap_hd_info = None
     IP_header = None
-    TCP_header = None
+    TCPHeader = None
     timestamp = 0
     packet_No = 0
     RTT_value = 0
@@ -167,7 +226,7 @@ class packet():
     
     def __init__(self):
         self.IP_header = IP_Header()
-        self.TCP_header = TCP_Header()
+        self.TCPHeader = TCPHeader()
         #self.pcap_hd_info = pcap_ph_info()
         self.timestamp = 0
         self.packet_No =0
@@ -196,7 +255,8 @@ if __name__ == "__main__":
     tracefile = sys.argv[1]
     try:
         with open(tracefile, 'rb') as f:
-            global_header = f.read(24)
+            global_header_bytes = f.read(24)
+            global_header = parse_pcap_global_header(global_header_bytes)
             ## Check thiszone...
             packet_header1 = f.read(16)
             ## check incl_len for len of packet, and ts_sec for the time
