@@ -1,6 +1,7 @@
 import struct
 from ip_header import IPHeader
 from tcp_header import TCPHeader
+from ethernet_header import EthernetHeader
 
 class Packet():
     #pcap_hd_info = None
@@ -35,3 +36,8 @@ class Packet():
     def get_RTT_value(self,p):
         rtt = p.timestamp-self.timestamp
         self.RTT_value = round(rtt,8)
+    
+    @classmethod
+    def from_bytes(cls, packet_bytes):
+        ethernet_bytes = packet_bytes[:14]
+        ethernet_header = EthernetHeader.from_bytes(ethernet_bytes)
