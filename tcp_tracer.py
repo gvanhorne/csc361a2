@@ -10,17 +10,20 @@ if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python3 tcp_tracer.py <tracefile>.cap")
         sys.exit(1)
-
+    total_num_packets = 0
     tracefile = sys.argv[1]
     try:
         with open(tracefile, 'rb') as f:
             global_header_bytes = f.read(24)
             global_header = PCAPHeader.from_bytes(global_header_bytes)
-            ## Check thiszone...
-            packet_header_bytes = f.read(16)
-            packet_header = PacketHeader.from_bytes(packet_header_bytes, hex(global_header.magic_number))
-            print(packet_header)
-            # packet_header = parse_packet_header(packet_header1)
+            while True:
+                packet_header_bytes = f.read(16)
+                if not packet_header_bytes:
+                    break
+                else:
+                    packet_header = PacketHeader.from_bytes(packet_header_bytes, hex(global_header.magic_number))
+                    packet_data1 = f.read(packet_header.incl_len)
+                    total_num_packets += 1
             ## check incl_len for len of packet, and ts_sec for the time
             ## packet_data1 = f.read(incl_len)
             ## continue above to split every packet
@@ -28,3 +31,4 @@ if __name__ == "__main__":
         print("Could not read file:", tracefile)
     finally:
         f.close()
+        print(total_num_packets)
