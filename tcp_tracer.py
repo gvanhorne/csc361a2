@@ -1,58 +1,7 @@
 import struct
 import sys
+from pcap_header import PCAPHeader
 from packet_header import PacketHeader
-
-class PCAPHeader:
-    """
-    Represents a PCAP global header.
-
-    Attributes:
-    - magic_number (int): The PCAP magic number.
-    - version_major (int): Major version number of the PCAP file format.
-    - version_minor (int): Minor version number of the PCAP file format.
-    - thiszone (int): The timezone offset in seconds from UTC.
-    - sigfigs (int): Timestamp accuracy in microseconds.
-    - snaplen (int): The maximum number of bytes to capture per packet.
-    - network (int): Link-layer header type.
-    """
-    magic_number = None
-    version_major = None
-    version_minor = None
-    thiszone = None
-    sigfigs = None
-    snaplen = None
-    network = None
-
-    def __init__(self, magic_number, version_major, version_minor, thiszone, sigfigs, snaplen, network):
-        self.magic_number = magic_number
-        self.version_major = version_major
-        self.version_minor = version_minor
-        self.thiszone = thiszone
-        self.sigfigs = sigfigs
-        self.snaplen = snaplen
-        self.network = network
-
-    def __str__(self):
-        """
-        Returns a string representation of the PcapGlobalHeader object.
-        """
-        return (
-            f"Magic Number: {hex(self.magic_number)}\n"
-            f"Version Major: {self.version_major}\n"
-            f"Version Minor: {self.version_minor}\n"
-            f"Thiszone: {self.thiszone}\n"
-            f"Sigfigs: {self.sigfigs}\n"
-            f"Snaplen: {self.snaplen}\n"
-            f"Network: {self.network}"
-        )
-
-def parse_pcap_global_header(header_bytes):
-    if len(header_bytes) != 24:
-        raise ValueError("Invalid global header length")
-    magic_number = struct.unpack("<I", header_bytes[:4])[0]
-    byte_order = ">" if magic_number == '0xa1b2c3d4' else "<"
-    format_string = byte_order + "IHHIIII"
-    return PCAPHeader(*struct.unpack(format_string, header_bytes))
 
 class IP_Header:
     src_ip = None #<type 'str'>
@@ -249,7 +198,7 @@ if __name__ == "__main__":
     try:
         with open(tracefile, 'rb') as f:
             global_header_bytes = f.read(24)
-            global_header = parse_pcap_global_header(global_header_bytes)
+            global_header = PCAPHeader.from_bytes(global_header_bytes)
             ## Check thiszone...
             packet_header_bytes = f.read(16)
             packet_header = PacketHeader.from_bytes(packet_header_bytes)

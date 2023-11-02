@@ -56,5 +56,5 @@ class PacketHeader:
         """
         if len(header_bytes) != 16:
             raise ValueError("Invalid packet header length")
-        ts_sec, ts_usec, incl_len, orig_len = struct.unpack(">IIII", header_bytes)
+        ts_sec, ts_usec, incl_len, orig_len = struct.unpack("<IIII", header_bytes)
         return cls(ts_sec, ts_usec, incl_len, orig_len)
