@@ -2,6 +2,8 @@ import struct
 import sys
 from pcap_header import PCAPHeader
 from packet_header import PacketHeader
+from ip_header import IPHeader
+from tcp_header import TCPHeader
 
 class Packet():
     #pcap_hd_info = None
@@ -15,7 +17,7 @@ class Packet():
     
     
     def __init__(self):
-        self.IP_header = IP_Header()
+        self.IP_header = IPHeader()
         self.TCPHeader = TCPHeader()
         #self.pcap_hd_info = pcap_ph_info()
         self.timestamp = 0

@@ -1,9 +1,9 @@
 import unittest
-from ip_header import IP_Header
+from ip_header import IPHeader
 
 class TestIPHeader(unittest.TestCase):
     def test_get_IP(self):
-        ip_header = IP_Header()
+        ip_header = IPHeader()
 
         buffer1 = b'\x7f\x00\x00\x01'  # Source IP: 127.0.0.1
         buffer2 = b'\x0a\x00\x00\x02'  # Destination IP: 10.0.0.2
@@ -14,7 +14,7 @@ class TestIPHeader(unittest.TestCase):
         self.assertEqual(ip_header.dst_ip, '10.0.0.2')
 
     def test_get_header_len(self):
-        ip_header = IP_Header()
+        ip_header = IPHeader()
 
         value = b'\x45'  # Header Length: 5 (20 bytes)
 
@@ -23,7 +23,7 @@ class TestIPHeader(unittest.TestCase):
         self.assertEqual(ip_header.ip_header_len, 20)
 
     def test_get_total_len(self):
-        ip_header = IP_Header()
+        ip_header = IPHeader()
 
         buffer = b'\x00\x14'  # Total Length: 20 bytes
 

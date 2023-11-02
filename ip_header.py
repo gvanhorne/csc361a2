@@ -1,6 +1,6 @@
 import struct
 
-class IP_Header:
+class IPHeader:
     src_ip = None #<type 'str'>
     dst_ip = None #<type 'str'>
     ip_header_len = None #<type 'int'>
