@@ -81,7 +81,7 @@ if __name__ == "__main__":
             print(f"Status: {connection.state}")
             print(f"Start Time: {connection.start_time}")
             print(f"End Time: {connection.end_time}")
-            print(f"Duration: {connection.end_time - connection.start_time}")
+            print(f"Duration: {round(connection.end_time - connection.start_time, 6)}")
             print("END")
             print("++++++++++++++++++++++++++++++++")
             i += 1
