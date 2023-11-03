@@ -5,6 +5,7 @@ from packet_header import PacketHeader
 from ip_header import IPHeader
 from tcp_header import TCPHeader
 from packet import Packet
+from connection import Connection
 
 def add_connection(packet, connections):
     """
@@ -17,21 +18,22 @@ def add_connection(packet, connections):
     Returns:
         None
     """
-    connection = (
+    packet_connection = Connection(
         packet.ip_header.src_ip,
         packet.tcp_header.src_port,
         packet.ip_header.dst_ip,
         packet.tcp_header.dst_port
     )
 
-    reverse_connection = (
-        packet.ip_header.dst_ip,
-        packet.tcp_header.dst_port,
-        packet.ip_header.src_ip,
-        packet.tcp_header.src_port
-        )
-    if (reverse_connection not in connections and connection not in connections):
-        connections.append(connection)
+    for connection in connections:
+        if connection == packet_connection:
+            connection.update_state(packet.tcp_header)
+            connection.packets.append(packet)
+            break
+    else:
+        packet_connection.update_state(packet.tcp_header)
+        packet_connection.packets.append(packet)
+        connections.append(packet_connection)
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
@@ -54,9 +56,6 @@ if __name__ == "__main__":
                     packet = Packet.from_bytes(packet_bytes)
                     add_connection(packet, connections)
                     total_num_packets += 1
-            ## check incl_len for len of packet, and ts_sec for the time
-            ## packet_data1 = f.read(incl_len)
-            ## continue above to split every packet
     except IOError:
         print("Could not read file:", tracefile)
     finally:
@@ -68,10 +67,11 @@ if __name__ == "__main__":
         i = 1
         for connection in connections:
             print(f"Connection {i}:")
-            print(f"Source Address: {connection[0]}")
-            print(f"Destination Address: {connection[2]}")
-            print(f"Source Port: {connection[1]}")
-            print(f"Destination Port: {connection[3]}")
+            print(f"Source Address: {connection.src_ip}")
+            print(f"Destination Address: {connection.dst_ip}")
+            print(f"Source Port: {connection.src_port}")
+            print(f"Destination Port: {connection.dst_port}")
+            print(f"Status: {connection.state}")
             print("END")
             print("++++++++++++++++++++++++++++++++")
             i += 1
