@@ -27,14 +27,14 @@ def add_connection(packet, connections):
 
     for connection in connections:
         if connection == packet_connection:
-            connection.update_state(packet.tcp_header, packet.ip_header, packet_header.timestamp)
+            connection.update_state(packet, packet_header.timestamp)
             connection.packets.append(packet)
             break
     else:
         # No matching connection, so append to the list of collections
         packet_connection.connection_src = packet.ip_header.src_ip
         packet_connection.connection_dst = packet.ip_header.dst_ip
-        packet_connection.update_state(packet.tcp_header, packet.ip_header, packet_header.timestamp)
+        packet_connection.update_state(packet, packet_header.timestamp)
         packet_connection.packets.append(packet)
         connections.append(packet_connection)
 
@@ -89,6 +89,7 @@ if __name__ == "__main__":
                 print(f"Number of packets sent from Source to Destination: {connection.num_packets_to_dst}")
                 print(f"Number of packets sent from Destination to Source: {connection.num_packets_to_src}")
                 print(f"Total number of packets: {connection.num_packets_to_dst + connection.num_packets_to_src}")
+                print(f"Number of data bytes sent from Source to Destination: {connection.num_bytes_to_dst}")
             print("END")
             print("++++++++++++++++++++++++++++++++")
             i += 1

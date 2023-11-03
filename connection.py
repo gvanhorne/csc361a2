@@ -11,6 +11,7 @@ class Connection:
   connection_dst = None
   num_packets_to_dst = 0
   num_packets_to_src = 0
+  num_bytes_to_dst = 0
 
   def __init__(self, src_ip, src_port, dst_ip, dst_port):
     self.src_ip = src_ip
@@ -28,21 +29,22 @@ class Connection:
       )
     return False
 
-  def update_state(self, tcp_header, ip_header, timestamp):
-    self.num_syn += tcp_header.flags["SYN"]
-    self.num_fin += tcp_header.flags["FIN"]
-    self.num_rst += tcp_header.flags["RST"]
+  def update_state(self, packet, timestamp):
+    self.num_syn += packet.tcp_header.flags["SYN"]
+    self.num_fin += packet.tcp_header.flags["FIN"]
+    self.num_rst += packet.tcp_header.flags["RST"]
     if self.num_rst > 0:
       self.state = f"S{self.num_syn}F{self.num_fin}/R"
     else:
       self.state = f"S{self.num_syn}F{self.num_fin}"
     if self.num_syn == 1:
       self.start_time = timestamp
-    if tcp_header.flags["FIN"] == 1:
+    if packet.tcp_header.flags["FIN"] == 1:
       self.end_time = timestamp
-    if ip_header.dst_ip == self.connection_dst:
+    if packet.ip_header.dst_ip == self.connection_dst:
       self.num_packets_to_dst += 1
-    elif ip_header.dst_ip == self.connection_src:
+      self.num_bytes_to_dst += packet.data_bytes
+    elif packet.ip_header.dst_ip == self.connection_src:
       self.num_packets_to_src += 1
 
     

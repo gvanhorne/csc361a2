@@ -12,9 +12,10 @@ class Packet():
     RTT_value = 0
     RTT_flag = False
     buffer = None
+    data_bytes = 0
     
     
-    def __init__(self, ip_header, tcp_header):
+    def __init__(self, ip_header, tcp_header, packet_bytes):
         self.ip_header = ip_header
         self.tcp_header = tcp_header
         #self.pcap_hd_info = pcap_ph_info()
@@ -23,6 +24,7 @@ class Packet():
         self.RTT_value = 0.0
         self.RTT_flag = False
         self.buffer = None
+        self.data_bytes = len(packet_bytes[14+ip_header.ip_header_len+tcp_header.data_offset:])
         
     def packet_No_set(self,number):
         self.packet_No = number
@@ -49,4 +51,4 @@ class Packet():
         tcp_header.get_src_port(packet_bytes[14+ip_header.ip_header_len:14+ip_header.ip_header_len + 2])
         tcp_header.get_dst_port(packet_bytes[14+ip_header.ip_header_len + 2:14+ip_header.ip_header_len + 4])
         tcp_header.get_flags(packet_bytes[14+ip_header.ip_header_len + 13:14+ip_header.ip_header_len + 14])
-        return cls(ip_header, tcp_header)
+        return cls(ip_header, tcp_header, packet_bytes)
