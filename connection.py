@@ -1,11 +1,12 @@
-import struct
-
 class Connection:
   packets = []
   state = 'S0F0'
   num_syn = 0
   num_fin = 0
   num_rst = 0
+  start_time = 0
+  end_time = 0
+  orig_time = 0
 
   def __init__(self, src_ip, src_port, dst_ip, dst_port):
     self.src_ip = src_ip
@@ -23,7 +24,7 @@ class Connection:
       )
     return False
 
-  def update_state(self, tcp_header):
+  def update_state(self, tcp_header, timestamp):
     self.num_syn += tcp_header.flags["SYN"]
     self.num_fin += tcp_header.flags["FIN"]
     self.num_rst += tcp_header.flags["RST"]
@@ -31,4 +32,8 @@ class Connection:
       self.state = f"S{self.num_syn}F{self.num_fin}/R"
     else:
       self.state = f"S{self.num_syn}F{self.num_fin}"
+    if self.num_syn == 1:
+      self.start_time = timestamp
+    if tcp_header.flags["FIN"] == 1:
+      self.end_time = timestamp
 

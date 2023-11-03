@@ -27,11 +27,11 @@ def add_connection(packet, connections):
 
     for connection in connections:
         if connection == packet_connection:
-            connection.update_state(packet.tcp_header)
+            connection.update_state(packet.tcp_header, packet_header.timestamp)
             connection.packets.append(packet)
             break
     else:
-        packet_connection.update_state(packet.tcp_header)
+        packet_connection.update_state(packet.tcp_header, packet_header.timestamp)
         packet_connection.packets.append(packet)
         connections.append(packet_connection)
 
@@ -42,6 +42,7 @@ if __name__ == "__main__":
     total_num_packets = 0
     connections = []
     tracefile = sys.argv[1]
+    orig_time = 0
     try:
         with open(tracefile, 'rb') as f:
             global_header_bytes = f.read(24)
@@ -54,6 +55,12 @@ if __name__ == "__main__":
                     packet_header = PacketHeader.from_bytes(packet_header_bytes, hex(global_header.magic_number))
                     packet_bytes = f.read(packet_header.incl_len)
                     packet = Packet.from_bytes(packet_bytes)
+                    if orig_time == 0:
+                        packet_header.timestamp_set(packet_header_bytes[0:4], packet_header_bytes[4:8], orig_time)
+                        orig_time = packet_header.timestamp
+                        packet_header.timestamp_set(packet_header_bytes[0:4], packet_header_bytes[4:8], orig_time)
+                    else:
+                        packet_header.timestamp_set(packet_header_bytes[0:4], packet_header_bytes[4:8], orig_time)
                     add_connection(packet, connections)
                     total_num_packets += 1
     except IOError:
@@ -72,6 +79,9 @@ if __name__ == "__main__":
             print(f"Source Port: {connection.src_port}")
             print(f"Destination Port: {connection.dst_port}")
             print(f"Status: {connection.state}")
+            print(f"Start Time: {connection.start_time}")
+            print(f"End Time: {connection.end_time}")
+            print(f"Duration: {connection.end_time - connection.start_time}")
             print("END")
             print("++++++++++++++++++++++++++++++++")
             i += 1

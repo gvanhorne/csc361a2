@@ -24,11 +24,6 @@ class Packet():
         self.RTT_flag = False
         self.buffer = None
         
-    def timestamp_set(self,buffer1,buffer2,orig_time):
-        seconds = struct.unpack('I',buffer1)[0]
-        microseconds = struct.unpack('<I',buffer2)[0]
-        self.timestamp = round(seconds+microseconds*0.000001-orig_time,6)
-        #print(self.timestamp,self.packet_No)
     def packet_No_set(self,number):
         self.packet_No = number
         #print(self.packet_No)

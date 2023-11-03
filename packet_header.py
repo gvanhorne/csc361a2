@@ -22,6 +22,8 @@ class PacketHeader:
       - Raises:
         - ValueError: If the length of header_bytes is not 16 (invalid header length).
     """
+    timestamp = 0
+
     def __init__(self, ts_sec, ts_usec, incl_len, orig_len):
         self.ts_sec = ts_sec
         self.ts_usec = ts_usec
@@ -38,6 +40,11 @@ class PacketHeader:
             f"Included Length: {self.incl_len}\n"
             f"Original Length: {self.orig_len}"
         )
+
+    def timestamp_set(self,buffer1,buffer2,orig_time):
+      seconds = struct.unpack('I',buffer1)[0]
+      microseconds = struct.unpack('<I',buffer2)[0]
+      self.timestamp = round(seconds+microseconds*0.000001-orig_time,6)
 
     @classmethod
     def from_bytes(cls, header_bytes, magic_number):
