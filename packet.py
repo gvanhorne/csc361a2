@@ -53,4 +53,5 @@ class Packet():
         tcp_header_bytes = packet_bytes[14+ip_header.ip_header_len:14+ip_header.ip_header_len+tcp_header.data_offset]
         tcp_header.get_src_port(packet_bytes[14+ip_header.ip_header_len:14+ip_header.ip_header_len + 2])
         tcp_header.get_dst_port(packet_bytes[14+ip_header.ip_header_len + 2:14+ip_header.ip_header_len + 4])
+        tcp_header.get_flags(packet_bytes[14+ip_header.ip_header_len + 13:14+ip_header.ip_header_len + 14])
         return cls(ip_header, tcp_header)
