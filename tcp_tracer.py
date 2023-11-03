@@ -87,6 +87,7 @@ if __name__ == "__main__":
             print(f"Duration: {round(connection.end_time - connection.start_time, 6)}")
             print(f"Number of packets sent from Source to Destination: {connection.num_packets_to_dst}")
             print(f"Number of packets sent from Destination to Source: {connection.num_packets_to_src}")
+            print(f"Total number of packets: {connection.num_packets_to_dst + connection.num_packets_to_src}")
             print("END")
             print("++++++++++++++++++++++++++++++++")
             i += 1
