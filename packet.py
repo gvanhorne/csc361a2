@@ -52,4 +52,7 @@ class Packet():
         tcp_header.get_src_port(packet_bytes[14+ip_header.ip_header_len:14+ip_header.ip_header_len + 2])
         tcp_header.get_dst_port(packet_bytes[14+ip_header.ip_header_len + 2:14+ip_header.ip_header_len + 4])
         tcp_header.get_flags(packet_bytes[14+ip_header.ip_header_len + 13:14+ip_header.ip_header_len + 14])
+        if (tcp_header.flags["ACK"] == 1):
+            tcp_header.get_ack_num(packet_bytes[14+ip_header.ip_header_len + 8:14+ip_header.ip_header_len + 12])
+        tcp_header.get_seq_num(packet_bytes[14+ip_header.ip_header_len + 4:14+ip_header.ip_header_len + 8])
         return cls(ip_header, tcp_header, packet_bytes)

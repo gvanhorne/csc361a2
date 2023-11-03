@@ -64,6 +64,7 @@ if __name__ == "__main__":
                         packet_header.timestamp_set(packet_header_bytes[0:4], packet_header_bytes[4:8], orig_time)
                     else:
                         packet_header.timestamp_set(packet_header_bytes[0:4], packet_header_bytes[4:8], orig_time)
+                    packet.timestamp = packet_header.timestamp
                     add_connection(packet, connections)
                     total_num_packets += 1
     except IOError:
@@ -81,6 +82,9 @@ if __name__ == "__main__":
         min_time_duration = float("inf")
         max_time_duration = 0
         sum_time_duration = 0
+        min_rtt = float("inf")
+        max_rtt = 0
+
         for connection in connections:
             print(f"Connection {i}:")
             print(f"Source Address: {connection.src_ip}")
@@ -95,6 +99,10 @@ if __name__ == "__main__":
             if (connection.num_syn >= 1 and connection.num_fin >= 1):
                 num_complete_connections += 1
                 duration = round(connection.end_time - connection.start_time, 6)
+                if (connection.get_min_rtt() < min_rtt):
+                    min_rtt = round(connection.min_RTT, 6)
+                elif (connection.max_RTT > max_rtt):
+                    max_rtt = round(connection.max_RTT, 6)
                 if (duration < min_time_duration):
                     min_time_duration = duration
                 if (duration > max_time_duration):
@@ -122,4 +130,7 @@ if __name__ == "__main__":
         print("D) Complete TCP Connections\n")
         print(f"Minimum time duration: {min_time_duration}")
         print(f"Mean time duration: {round(sum_time_duration/num_complete_connections, 6)}")
-        print(f"Maximum time duration: {max_time_duration}")
+        print(f"Maximum time duration: {max_time_duration}\n")
+
+        print(f"Minimum RTT value: {min_rtt}")
+        print(f"Maximum RTT value: {max_rtt}")

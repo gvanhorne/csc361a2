@@ -14,6 +14,8 @@ class Connection:
   num_bytes_to_dst = 0
   num_bytes_to_src = 0
   total_num_bytes = 0
+  min_RTT = float("inf")
+  max_RTT = 0
 
   def __init__(self, src_ip, src_port, dst_ip, dst_port):
     self.src_ip = src_ip
@@ -50,5 +52,35 @@ class Connection:
       self.num_packets_to_src += 1
       self.num_bytes_to_src += packet.data_bytes
     self.total_num_bytes += packet.data_bytes
+
+  def get_min_rtt(self):
+    for i, packet in enumerate(self.packets):
+      if (
+          packet.ip_header.dst_ip == self.connection_dst
+          and packet.tcp_header.flags["RST"] == 0
+          and packet.tcp_header.flags != {"ACK": 1, "SYN": 0, "FIN": 0, "RST": 0}
+      ):
+        expected_ack = packet.tcp_header.seq_num + 1
+        for j, other_packet in enumerate(self.packets):
+            if i != j:
+                if (
+                    other_packet.tcp_header.ack_num == expected_ack
+                ):
+                  diff = abs((other_packet.timestamp - packet.timestamp))
+                  if diff < self.min_RTT:
+                    self.min_RTT = diff
+                  elif diff > self.max_RTT:
+                    self.max_RTT = diff
+    return self.min_RTT
+
+    # for packet in self.packets:
+    #   if (
+    #       packet.ip_header.dst_ip == self.connection_dst
+    #       and packet.tcp_header.flags["RST"] == 0
+    #       and packet.tcp_header.flags != {"ACK": 1, "SYN": 0, "FIN": 0, "RST": 0}
+    #     ):
+
+
+
 
     
