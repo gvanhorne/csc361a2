@@ -61,5 +61,6 @@ if __name__ == "__main__":
         print("Could not read file:", tracefile)
     finally:
         f.close()
-        print(total_num_packets)
-        print(len(connections))
+        # print(total_num_packets)
+        print(f"A) Total number of connections: {len(connections)}")
+        print('________________________________________________\n')
