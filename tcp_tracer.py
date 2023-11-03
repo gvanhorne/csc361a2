@@ -75,6 +75,9 @@ if __name__ == "__main__":
         print('________________________________________________\n')
         print("B) Connections details\n")
         i = 1
+        num_complete_connections = 0
+        num_reset_connections = 0
+        num_open_connections = 0
         for connection in connections:
             print(f"Connection {i}:")
             print(f"Source Address: {connection.src_ip}")
@@ -82,7 +85,12 @@ if __name__ == "__main__":
             print(f"Source Port: {connection.src_port}")
             print(f"Destination Port: {connection.dst_port}")
             print(f"Status: {connection.state}")
+            if (connection.num_rst >= 1):
+                num_reset_connections += 1
+            if (connection.num_fin < 1):
+                num_open_connections += 1
             if (connection.num_syn >= 1 and connection.num_fin >= 1):
+                num_complete_connections += 1
                 print(f"Start Time: {connection.start_time}")
                 print(f"End Time: {connection.end_time}")
                 print(f"Duration: {round(connection.end_time - connection.start_time, 6)}")
@@ -92,8 +100,12 @@ if __name__ == "__main__":
                 print(f"Number of data bytes sent from Source to Destination: {connection.num_bytes_to_dst}")
                 print(f"Number of data bytes sent from Destination to Source: {connection.num_bytes_to_src}")
                 print(f"Total number of data bytes: {connection.total_num_bytes}")
-
-
             print("END")
-            print("++++++++++++++++++++++++++++++++")
             i += 1
+            if i < len(connections) + 1:
+                print("++++++++++++++++++++++++++++++++")
+        print("________________________________________________")
+        print("C) General")
+        print(f"Total number of complete TCP connections: {num_complete_connections}")
+        print(f"Number of reset TCP connections: {num_reset_connections}")
+        print(f"Number of TCP connections that were still open when the trace capture ended: {num_open_connections}")
