@@ -79,6 +79,7 @@ if __name__ == "__main__":
         num_reset_connections = 0
         num_open_connections = 0
         min_time_duration = float("inf")
+        sum_time_duration = 0
         for connection in connections:
             print(f"Connection {i}:")
             print(f"Source Address: {connection.src_ip}")
@@ -95,6 +96,7 @@ if __name__ == "__main__":
                 duration = round(connection.end_time - connection.start_time, 6)
                 if (duration < min_time_duration):
                     min_time_duration = duration
+                sum_time_duration += duration
                 print(f"Start Time: {connection.start_time}")
                 print(f"End Time: {connection.end_time}")
                 print(f"Duration: {duration}")
@@ -116,3 +118,4 @@ if __name__ == "__main__":
         print("________________________________________________")
         print("D) Complete TCP Connections\n")
         print(f"Minimum time duration: {min_time_duration}")
+        print(f"Mean time duration: {round(sum_time_duration/num_complete_connections, 6)}")
