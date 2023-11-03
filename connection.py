@@ -7,6 +7,10 @@ class Connection:
   start_time = 0
   end_time = 0
   orig_time = 0
+  connection_src = None
+  connection_dst = None
+  num_packets_to_dst = 0
+  num_packets_to_src = 0
 
   def __init__(self, src_ip, src_port, dst_ip, dst_port):
     self.src_ip = src_ip
@@ -24,7 +28,7 @@ class Connection:
       )
     return False
 
-  def update_state(self, tcp_header, timestamp):
+  def update_state(self, tcp_header, ip_header, timestamp):
     self.num_syn += tcp_header.flags["SYN"]
     self.num_fin += tcp_header.flags["FIN"]
     self.num_rst += tcp_header.flags["RST"]
@@ -36,4 +40,9 @@ class Connection:
       self.start_time = timestamp
     if tcp_header.flags["FIN"] == 1:
       self.end_time = timestamp
+    if ip_header.dst_ip == self.connection_dst:
+      self.num_packets_to_dst += 1
+    elif ip_header.dst_ip == self.connection_src:
+      self.num_packets_to_src += 1
 
+    
