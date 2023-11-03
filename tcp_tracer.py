@@ -30,15 +30,15 @@ def add_connection(packet, connections):
         packet.ip_header.src_ip,
         packet.tcp_header.src_port
         )
-    if (reverse_connection not in connections):
-        connections.add(connection)
+    if (reverse_connection not in connections and connection not in connections):
+        connections.append(connection)
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python3 tcp_tracer.py <tracefile>.cap")
         sys.exit(1)
     total_num_packets = 0
-    connections = set()
+    connections = []
     tracefile = sys.argv[1]
     try:
         with open(tracefile, 'rb') as f:
@@ -64,3 +64,14 @@ if __name__ == "__main__":
         # print(total_num_packets)
         print(f"A) Total number of connections: {len(connections)}")
         print('________________________________________________\n')
+        print("B) Connections details\n")
+        i = 1
+        for connection in connections:
+            print(f"Connection {i}:")
+            print(f"Source Address: {connection[0]}")
+            print(f"Destination Address: {connection[2]}")
+            print(f"Source Port: {connection[1]}")
+            print(f"Destination Port: {connection[3]}")
+            print("END")
+            print("++++++++++++++++++++++++++++++++")
+            i += 1
