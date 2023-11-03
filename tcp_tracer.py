@@ -78,6 +78,7 @@ if __name__ == "__main__":
         num_complete_connections = 0
         num_reset_connections = 0
         num_open_connections = 0
+        min_time_duration = float("inf")
         for connection in connections:
             print(f"Connection {i}:")
             print(f"Source Address: {connection.src_ip}")
@@ -91,9 +92,12 @@ if __name__ == "__main__":
                 num_open_connections += 1
             if (connection.num_syn >= 1 and connection.num_fin >= 1):
                 num_complete_connections += 1
+                duration = round(connection.end_time - connection.start_time, 6)
+                if (duration < min_time_duration):
+                    min_time_duration = duration
                 print(f"Start Time: {connection.start_time}")
                 print(f"End Time: {connection.end_time}")
-                print(f"Duration: {round(connection.end_time - connection.start_time, 6)}")
+                print(f"Duration: {duration}")
                 print(f"Number of packets sent from Source to Destination: {connection.num_packets_to_dst}")
                 print(f"Number of packets sent from Destination to Source: {connection.num_packets_to_src}")
                 print(f"Total number of packets: {connection.num_packets_to_dst + connection.num_packets_to_src}")
@@ -105,7 +109,10 @@ if __name__ == "__main__":
             if i < len(connections) + 1:
                 print("++++++++++++++++++++++++++++++++")
         print("________________________________________________")
-        print("C) General")
+        print("C) General\n")
         print(f"Total number of complete TCP connections: {num_complete_connections}")
         print(f"Number of reset TCP connections: {num_reset_connections}")
         print(f"Number of TCP connections that were still open when the trace capture ended: {num_open_connections}")
+        print("________________________________________________")
+        print("D) Complete TCP Connections\n")
+        print(f"Minimum time duration: {min_time_duration}")
