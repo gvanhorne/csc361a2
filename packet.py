@@ -24,7 +24,8 @@ class Packet():
         self.RTT_value = 0.0
         self.RTT_flag = False
         self.buffer = None
-        self.data_bytes = len(packet_bytes[14+ip_header.ip_header_len+tcp_header.data_offset:])
+        self.data_bytes = len(packet_bytes[14 + ip_header.ip_header_len + tcp_header.data_offset:]
+            .rstrip(b'\x00'))
         
     def packet_No_set(self,number):
         self.packet_No = number

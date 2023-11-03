@@ -90,6 +90,10 @@ if __name__ == "__main__":
                 print(f"Number of packets sent from Destination to Source: {connection.num_packets_to_src}")
                 print(f"Total number of packets: {connection.num_packets_to_dst + connection.num_packets_to_src}")
                 print(f"Number of data bytes sent from Source to Destination: {connection.num_bytes_to_dst}")
+                print(f"Number of data bytes sent from Destination to Source: {connection.num_bytes_to_src}")
+                print(f"Total number of data bytes: {connection.total_num_bytes}")
+
+
             print("END")
             print("++++++++++++++++++++++++++++++++")
             i += 1

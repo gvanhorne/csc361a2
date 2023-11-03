@@ -12,6 +12,8 @@ class Connection:
   num_packets_to_dst = 0
   num_packets_to_src = 0
   num_bytes_to_dst = 0
+  num_bytes_to_src = 0
+  total_num_bytes = 0
 
   def __init__(self, src_ip, src_port, dst_ip, dst_port):
     self.src_ip = src_ip
@@ -46,5 +48,7 @@ class Connection:
       self.num_bytes_to_dst += packet.data_bytes
     elif packet.ip_header.dst_ip == self.connection_src:
       self.num_packets_to_src += 1
+      self.num_bytes_to_src += packet.data_bytes
+    self.total_num_bytes += packet.data_bytes
 
     
