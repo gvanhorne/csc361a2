@@ -81,6 +81,8 @@ if __name__ == "__main__":
         sum_time_duration = 0
         min_rtt = float("inf")
         max_rtt = 0
+        min_packets = float("inf")
+        max_packets = 0
 
         for connection in connections:
             print(f"Connection {i}:")
@@ -105,6 +107,10 @@ if __name__ == "__main__":
                 if (duration > max_time_duration):
                     max_time_duration = duration
                 sum_time_duration += duration
+                if (connection.num_packets_to_src + connection.num_packets_to_dst < min_packets):
+                    min_packets = connection.num_packets_to_src + connection.num_packets_to_dst
+                elif (connection.num_packets_to_src + connection.num_packets_to_dst > max_packets):
+                    max_packets = connection.num_packets_to_src + connection.num_packets_to_dst
                 print(f"Start Time: {connection.start_time}")
                 print(f"End Time: {connection.end_time}")
                 print(f"Duration: {duration}")
@@ -130,4 +136,7 @@ if __name__ == "__main__":
         print(f"Maximum time duration: {max_time_duration}\n")
 
         print(f"Minimum RTT value: {min_rtt}")
-        print(f"Maximum RTT value: {max_rtt}")
+        print(f"Maximum RTT value: {max_rtt}\n")
+
+        print(f"Minimum of packets: {min_packets}")
+        print(f"Maximum number of packets: {max_packets}")
