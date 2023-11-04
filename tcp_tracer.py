@@ -22,17 +22,16 @@ def add_connection(packet, connections):
         packet.tcp_header.dst_port
     )
 
-    for connection in connections:
-        if connection == packet_connection:
-            connection.update_state(packet, packet_header.timestamp)
-            connection.packets.append(packet)
-            break
+    existing_connection = next((conn for conn in connections if conn == packet_connection), None)
+    if existing_connection:
+        existing_connection.update_state(packet, packet_header.timestamp)
+        existing_connection.add_packet(packet)
     else:
         # No matching connection, so append to the list of collections
         packet_connection.connection_src = packet.ip_header.src_ip
         packet_connection.connection_dst = packet.ip_header.dst_ip
         packet_connection.update_state(packet, packet_header.timestamp)
-        packet_connection.packets.append(packet)
+        packet_connection.add_packet(packet)
         connections.append(packet_connection)
 
 if __name__ == "__main__":
@@ -84,6 +83,7 @@ if __name__ == "__main__":
         min_packets = float("inf")
         max_packets = 0
         sum_packets = 0
+        window_sizes = []
 
         for connection in connections:
             print(f"Connection {i}:")
@@ -113,6 +113,7 @@ if __name__ == "__main__":
                 elif (connection.num_packets_to_src + connection.num_packets_to_dst > max_packets):
                     max_packets = connection.num_packets_to_src + connection.num_packets_to_dst
                 sum_packets += connection.num_packets_to_src + connection.num_packets_to_dst
+                window_sizes.extend(connection.get_window_sizes())
                 print(f"Start Time: {connection.start_time}")
                 print(f"End Time: {connection.end_time}")
                 print(f"Duration: {duration}")
@@ -142,4 +143,9 @@ if __name__ == "__main__":
 
         print(f"Minimum of packets: {min_packets}")
         print(f"Mean number of packets: {round(sum_packets/num_complete_connections, 6)}")
-        print(f"Maximum number of packets: {max_packets}")
+        print(f"Maximum number of packets: {max_packets}\n")
+
+        print(f"Minimum received window size: {min(window_sizes)}")
+        print(f"Mean received window size: {round(sum(window_sizes) / len(window_sizes), 6)}")
+        # print(f"length of window size: {len(window_sizes)}, {total_num_packets}")
+        print(f"Maximum received window size: {max(window_sizes)}")

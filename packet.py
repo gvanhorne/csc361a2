@@ -55,4 +55,6 @@ class Packet():
         if (tcp_header.flags["ACK"] == 1):
             tcp_header.get_ack_num(packet_bytes[14+ip_header.ip_header_len + 8:14+ip_header.ip_header_len + 12])
         tcp_header.get_seq_num(packet_bytes[14+ip_header.ip_header_len + 4:14+ip_header.ip_header_len + 8])
+        tcp_header.get_window_size(packet_bytes[14+ip_header.ip_header_len + 14:14+ip_header.ip_header_len + 15],
+                                    packet_bytes[14+ip_header.ip_header_len + 15:14+ip_header.ip_header_len + 16])
         return cls(ip_header, tcp_header, packet_bytes)
