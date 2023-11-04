@@ -1,9 +1,6 @@
-import struct
 import sys
 from pcap_header import PCAPHeader
 from packet_header import PacketHeader
-from ip_header import IPHeader
-from tcp_header import TCPHeader
 from packet import Packet
 from connection import Connection
 
