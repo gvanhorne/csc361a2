@@ -1,4 +1,3 @@
-import struct
 from ip_header import IPHeader
 from tcp_header import TCPHeader
 from ethernet_header import EthernetHeader

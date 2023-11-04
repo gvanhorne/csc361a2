@@ -81,7 +81,8 @@ def print_connection_details(i, connection, is_complete_connection):
         print(f"Number of data bytes sent from Destination to Source: {connection.num_bytes_to_src}")
         print(f"Total number of data bytes: {connection.total_num_bytes}")
     print("END")
-    print("++++++++++++++++++++++++++++++++")
+    if (i < len(connections)):
+        print("++++++++++++++++++++++++++++++++")
 
 def update_duration_stats(duration, min_duration, max_duration, sum_duration):
     """
@@ -151,7 +152,7 @@ def print_general_stats(num_complete_connections, num_reset_connections, num_ope
     Returns:
         None
     """
-    print("________________________________________________")
+    print("________________________________________________\n")
     print("C) General\n")
     print(f"Total number of complete TCP connections: {num_complete_connections}")
     print(f"Number of reset TCP connections: {num_reset_connections}")
@@ -178,7 +179,7 @@ def print_complete_tcp_connection_stats(num_complete_connections, min_duration, 
     Returns:
         None
     """
-    print("________________________________________________")
+    print("________________________________________________\n")
     print("D) Complete TCP Connections\n")
     print(f"Minimum time duration: {min_duration}")
     print(f"Mean time duration: {round(sum_duration / num_complete_connections, 6)}")
@@ -234,20 +235,31 @@ if __name__ == "__main__":
         with open(tracefile, 'rb') as f:
             global_header_bytes = f.read(24)
             global_header = PCAPHeader.from_bytes(global_header_bytes)
+
+            # Process individual packets
             while True:
                 packet_header_bytes = f.read(16)
+
                 if not packet_header_bytes:
                     break
                 else:
                     packet_header = PacketHeader.from_bytes(packet_header_bytes, hex(global_header.magic_number))
+
+                    # Read the packet data based on the "incl_len" from the packet header
                     packet_bytes = f.read(packet_header.incl_len)
+
+                    # Create a Packet instance by parsing the packet data
                     packet = Packet.from_bytes(packet_bytes)
+
+                    # Handle the timestamp for the packet
                     if orig_time == 0:
                         packet_header.timestamp_set(packet_header_bytes[0:4], packet_header_bytes[4:8], orig_time)
                         orig_time = packet_header.timestamp
                         packet_header.timestamp_set(packet_header_bytes[0:4], packet_header_bytes[4:8], orig_time)
                     else:
                         packet_header.timestamp_set(packet_header_bytes[0:4], packet_header_bytes[4:8], orig_time)
+
+                    # Set the packet's timestamp and add the connection to the list
                     packet.timestamp = packet_header.timestamp
                     add_connection(packet, connections)
     except IOError:
