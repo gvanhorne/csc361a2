@@ -38,7 +38,6 @@ if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python3 tcp_tracer.py <tracefile>.cap")
         sys.exit(1)
-    total_num_packets = 0
     connections = []
     tracefile = sys.argv[1]
     orig_time = 0
@@ -62,12 +61,10 @@ if __name__ == "__main__":
                         packet_header.timestamp_set(packet_header_bytes[0:4], packet_header_bytes[4:8], orig_time)
                     packet.timestamp = packet_header.timestamp
                     add_connection(packet, connections)
-                    total_num_packets += 1
     except IOError:
         print("Could not read file:", tracefile)
     finally:
         f.close()
-        # print(total_num_packets)
         print(f"A) Total number of connections: {len(connections)}")
         print('________________________________________________\n')
         print("B) Connections details\n")
@@ -84,6 +81,7 @@ if __name__ == "__main__":
         max_packets = 0
         sum_packets = 0
         window_sizes = []
+        rtts = []
 
         for connection in connections:
             print(f"Connection {i}:")
@@ -114,6 +112,7 @@ if __name__ == "__main__":
                     max_packets = connection.num_packets_to_src + connection.num_packets_to_dst
                 sum_packets += connection.num_packets_to_src + connection.num_packets_to_dst
                 window_sizes.extend(connection.get_window_sizes())
+                rtts.extend(connection.get_rtts())
                 print(f"Start Time: {connection.start_time}")
                 print(f"End Time: {connection.end_time}")
                 print(f"Duration: {duration}")
@@ -139,6 +138,7 @@ if __name__ == "__main__":
         print(f"Maximum time duration: {max_time_duration}\n")
 
         print(f"Minimum RTT value: {min_rtt}")
+        print(f"Mean RTT value: {round((sum(rtts) / len(rtts)), 6)}")
         print(f"Maximum RTT value: {max_rtt}\n")
 
         print(f"Minimum of packets: {min_packets}")
@@ -147,5 +147,4 @@ if __name__ == "__main__":
 
         print(f"Minimum received window size: {min(window_sizes)}")
         print(f"Mean received window size: {round(sum(window_sizes) / len(window_sizes), 6)}")
-        # print(f"length of window size: {len(window_sizes)}, {total_num_packets}")
         print(f"Maximum received window size: {max(window_sizes)}")

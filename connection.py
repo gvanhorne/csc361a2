@@ -22,6 +22,7 @@ class Connection:
         self.min_RTT = float("inf")
         self.max_RTT = 0
         self.window_sizes = []
+        self.rtts = []
 
   def __eq__(self, other):
     if isinstance(other, Connection):
@@ -82,3 +83,20 @@ class Connection:
                   elif diff > self.max_RTT:
                     self.max_RTT = diff
     return self.min_RTT
+
+  def get_rtts(self):
+    for i, packet in enumerate(self.packets):
+      if (
+          packet.ip_header.dst_ip == self.connection_dst
+          and packet.tcp_header.flags["RST"] == 0
+          and packet.tcp_header.flags != {"ACK": 1, "SYN": 0, "FIN": 0, "RST": 0}
+      ):
+        expected_ack = packet.tcp_header.seq_num + 1
+        for j, other_packet in enumerate(self.packets):
+            if i != j:
+                if (
+                    other_packet.tcp_header.ack_num == expected_ack
+                ):
+                  diff = abs((other_packet.timestamp - packet.timestamp))
+                  self.rtts.append(round(diff, 8))
+    return self.rtts
